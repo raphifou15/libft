@@ -204,7 +204,6 @@ static void test_function_ft_strlen(void){
         else
             printf("%d:%s\U00010102 %s", i, RED, COLOR_RESET);
         free(a);
-        a = NULL;
     }
 	char *b = "";
     t++;
@@ -214,8 +213,6 @@ static void test_function_ft_strlen(void){
         printf("%d:%s\u2714 %s", t, GRN, COLOR_RESET);
     else
         printf("%d:%s\U00010102 %s", t, RED, COLOR_RESET);
-    free(a);
-    a = NULL;
 }
 
 static void test_function_ft_memset(void){
