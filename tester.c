@@ -3,6 +3,7 @@
 #include <strings.h>
 #include <ctype.h>
 #include <time.h>
+#include <stddef.h>
 #include <bsd/string.h>
 
 
@@ -10,59 +11,51 @@
 #define GRN "\e[0;32m"
 #define COLOR_RESET "\e[0m"
 
-struct test_atoi {
-    const char *input;
-    int expected;
-};
-
-struct test_atoi tests_atoi[] = {
-    {"123", 123},
-    {"-123", -123},
-    {"   456", 456},
-    {"789   ", 789},
-    {"321abc", 321},
-    {"654.321", 654},
-    {"+123", 123},
-    {"  -456", -456},
-    {"", 0},
-    {"abc", 0},
-    {"2147483647", INT_MAX},
-    {"-2147483648", INT_MIN},
-};
-
-struct test_calloc {
-    int nmemb;
-    int size; 
-};
-
-struct test_calloc tests_calloc[] = {
-    {0, 1},
-    {1, 1},
-    {5, 10},
-    {10, 5},
-    {50, 2},
-    {2, 50},
-    {100, 1},
-    {1, 100}
-};
 
 char test_isalnum[] = {'0', '9', 'A', 'Z', 'a', 'z', '!', '@', '[', '`', '{', ' ', '\n', '5'};
 
 
 
-static void test_function_atoi(void){
+static void test_function_ft_atoi(void) {
     printf("\n\ntest atoi:\n\n");
-    int size = sizeof(tests_atoi) / sizeof(tests_atoi[0]);
-    for (int i = 0; i < size; i++){
-        int myRes = ft_atoi(tests_atoi[i].input);
-        int res = atoi(tests_atoi[i].input);
-        if (myRes == res){
-            printf("%d:%s\u2714 %s", i, GRN, COLOR_RESET);
+    int t = 0;
+    srand(time(NULL));
+
+    for (int i = 0; i < 100; i++) {
+        t++;
+        int size = rand() % 18;
+        char *str = malloc(sizeof(char) * (size + 1));
+        if (str == NULL) return;
+
+        for (int y = 0; y < size; y++) {
+            str[y] = rand() % 10 + '0'; // Caractères numériques aléatoires
         }
-        else
-            printf("%d:%s\U00010102 %s", i, RED, COLOR_RESET);
+        str[size] = '\0';
+
+        int lib = atoi(str);
+        int myLib = ft_atoi(str);
+        
+
+        if (lib == myLib)
+            printf("%d : %s\u2714 %s", i, GRN, COLOR_RESET);
+        else{
+            printf("\nstr = %s, lib = %d, myLib = %d\n", str, lib, myLib);
+            printf("%d : %s\U00010102 %s", i, RED, COLOR_RESET);
+            printf("\n");
+        }    
+        free(str);
     }
-    printf("\n");
+
+    // Test supplémentaire pour une chaîne vide
+    t++;
+    char *empty_str = "";
+    int lib = atoi(empty_str);
+    int myLib = ft_atoi(empty_str);
+
+    if (lib == myLib)
+        printf("%d:%s\u2714 %s", t, GRN, COLOR_RESET);
+    else
+        printf("%d:%s\U00010102 %s", t, RED, COLOR_RESET);
 }
 
 static void test_function_bzero(void){
@@ -92,27 +85,49 @@ static void test_function_bzero(void){
     printf("\n");
 }
 
-static void test_function_calloc(void){
+static void test_function_ft_calloc(void) {
     printf("\n\ntest calloc:\n\n");
-    int size = sizeof(tests_calloc) / sizeof(tests_calloc[0]);
-    for (int i = 0; i < size; i++){
-        int total_size =  tests_calloc[i].nmemb * tests_calloc[i].size;
+    int t = 0;
+    srand(time(NULL));
 
-        char *ptr = calloc(tests_calloc[i].nmemb, tests_calloc[i].size);
-        char *myPtr = ft_calloc(tests_calloc[i].nmemb, tests_calloc[i].size);
+    for (int i = 0; i < 100; i++) {
+        t++;
+        size_t count = rand() % 100 + 1;
+        size_t size = rand() % 100 + 1;
+        void *ptr_lib = calloc(count, size);
+        void *ptr_my = ft_calloc(count, size);
 
-        for (int y = 0; y < total_size; y++){
-            if (ptr[y] != myPtr[y]){
-                printf("%d:%s\U00010102 %s", i, RED, COLOR_RESET);
-                y = total_size;
-            }
-            if (y == total_size -1)
-                printf("%d:%s\u2714 %s", i, GRN, COLOR_RESET);
-        }
+        int result = (ptr_lib != NULL && ptr_my != NULL);
 
+        // Vérifier si les blocs alloués sont identiques
+        if (result && memcmp(ptr_lib, ptr_my, count * size) == 0)
+            printf("%d:%s\u2714 %s", i, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", i, RED, COLOR_RESET);
+
+        // Libérer la mémoire allouée
+        free(ptr_lib);
+        free(ptr_my);
     }
-    printf("\n");
-    return;
+
+    // Test supplémentaire pour une allocation de taille nulle
+    t++;
+    size_t count = 0;
+    size_t size = 0;
+    void *ptr_lib = calloc(count, size);
+    void *ptr_my = ft_calloc(count, size);
+
+    int result = (ptr_lib != NULL && ptr_my != NULL);
+
+    // Vérifier si les blocs alloués sont identiques
+    if (result && memcmp(ptr_lib, ptr_my, count * size) == 0)
+        printf("%d:%s\u2714 %s", t, GRN, COLOR_RESET);
+    else
+        printf("%d:%s\U00010102 %s", t, RED, COLOR_RESET);
+
+    // Libérer la mémoire allouée
+    free(ptr_lib);
+    free(ptr_my);
 }
 
 static void test_function_ft_isalnum(void){
@@ -384,24 +399,611 @@ static void test_function_ft_strlcpy(void) {
         printf("%d:%s\U00010102 %s", t++, RED, COLOR_RESET);
 }
 
+static size_t my_strlcat(char *dst, const char *src, size_t dstsize) {
+    size_t dlen = strnlen(dst, dstsize);
+    size_t slen = strlen(src);
 
+    if (dlen == dstsize) {
+        return dstsize + slen;
+    }
+
+    if (slen < dstsize - dlen) {
+        memcpy(dst + dlen, src, slen + 1);
+    } else {
+        memcpy(dst + dlen, src, dstsize - dlen - 1);
+        dst[dstsize - 1] = '\0';
+    }
+
+    return dlen + slen;
+}
+
+static void test_function_ft_strlcat(void) {
+    printf("\n\ntest strlcat:\n\n");
+    int t = 0;
+    srand(time(NULL));
+
+    for (int i = 0; i < 100; i++) {
+        t++;
+        int size = rand() % 100 + 1; // Taille aléatoire entre 1 et 100
+
+        // Allouer les buffers de destination
+        char *buffer1 = malloc(size * 2);
+        char *buffer2 = malloc(size * 2);
+        if (buffer1 == NULL || buffer2 == NULL) return;
+
+        // Remplir les buffers de destination avec des données aléatoires
+        for (int j = 0; j < size - 1; j++) {
+            buffer1[j] = 'A' + (rand() % 26); // Remplir avec des lettres de A à Z
+            buffer2[j] = buffer1[j];
+        }
+        buffer1[size - 1] = '\0';
+        buffer2[size - 1] = '\0';
+
+        // Créer une source aléatoire
+        char *src = malloc(size);
+        if (src == NULL) return;
+
+        for (int j = 0; j < size - 1; j++) {
+            src[j] = 'A' + (rand() % 26); // Remplir avec des lettres de A à Z
+        }
+        src[size - 1] = '\0'; // Terminer la chaîne avec '\0'
+
+        // Définir différentes tailles de destination pour tester
+        int dstsize = rand() % (size + 20); // Taille aléatoire entre 0 et size + 20
+
+        // Utilisation des fonctions my_strlcat et ft_strlcat
+        size_t lib_len = my_strlcat(buffer1, src, dstsize);
+        size_t my_len = ft_strlcat(buffer2, src, dstsize);
+
+        // Comparaison des résultats
+        int result = (lib_len == my_len) && (strcmp(buffer1, buffer2) == 0);
+        if (result)
+            printf("%d:%s\u2714 %s", i, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", i, RED, COLOR_RESET);
+
+        free(buffer1);
+        free(buffer2);
+        free(src);
+    }
+}
+
+static void test_function_ft_toupper(void) {
+    printf("\n\ntest toupper:\n\n");
+    int t = 0;
+    srand(time(NULL));
+
+    for (int i = 0; i < 100; i++) {
+        t++;
+        int size = rand() % 100;
+        char *a = malloc(sizeof(char) * size + 1);
+        if (a == NULL) return;
+
+        for (int y = 0; y < size; y++) {
+            char c = rand() % 256;
+            a[y] = c;
+        }
+        a[size] = '\0';
+
+        int correct = 1;
+        for (int j = 0; j < size; j++) {
+            if (toupper(a[j]) != ft_toupper(a[j])) {
+                correct = 0;
+                break;
+            }
+        }
+
+        if (correct)
+            printf("%d:%s\u2714 %s", i, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", i, RED, COLOR_RESET);
+        free(a);
+    }
+
+    // Test supplémentaire pour un cas particulier (chaîne vide)
+    t++;
+    char *b = "";
+    int correct = 1;
+    for (int j = 0; b[j] != '\0'; j++) {
+        if (toupper(b[j]) != ft_toupper(b[j])) {
+            correct = 0;
+            break;
+        }
+    }
+
+    if (correct)
+        printf("%d:%s\u2714 %s", t, GRN, COLOR_RESET);
+    else
+        printf("%d:%s\U00010102 %s", t, RED, COLOR_RESET);
+}
+
+static void test_function_ft_tolower(void) {
+    printf("\n\ntest tolower:\n\n");
+    int t = 0;
+    srand(time(NULL));
+
+    for (int i = 0; i < 100; i++) {
+        t++;
+        int size = rand() % 100;
+        char *a = malloc(sizeof(char) * size + 1);
+        if (a == NULL) return;
+
+        for (int y = 0; y < size; y++) {
+            char c = rand() % 256;
+            a[y] = c;
+        }
+        a[size] = '\0';
+
+        int correct = 1;
+        for (int j = 0; j < size; j++) {
+            if (tolower(a[j]) != ft_tolower(a[j])) {
+                printf("original = %d, tolower = %d, ft_tolower = %d\n", a[j], tolower(a[j]), ft_tolower(a[j]));
+                correct = 0;
+                break;
+            }
+        }
+
+        if (correct)
+            printf("%d:%s\u2714 %s", i, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", i, RED, COLOR_RESET);
+
+        free(a);
+    }
+
+    // Test supplémentaire pour un cas particulier (chaîne vide)
+    t++;
+    char *b = "";
+    int correct = 1;
+    for (int j = 0; b[j] != '\0'; j++) {
+        if (tolower(b[j]) != ft_tolower(b[j])) {
+            correct = 0;
+            break;
+        }
+    }
+
+    if (correct)
+        printf("%d:%s\u2714 %s", t, GRN, COLOR_RESET);
+    else
+        printf("%d:%s\U00010102 %s", t, RED, COLOR_RESET);
+    printf("\n");
+}
+
+static void test_function_ft_strchr(void) {
+    printf("\n\ntest strchr:\n\n");
+    int t = 0;
+    srand(time(NULL));
+
+    for (int i = 0; i < 100; i++) {
+        t++;
+        int size = rand() % 100 + 1;
+        char *a = malloc(sizeof(char) * size + 1);
+        if (a == NULL) return;
+
+        for (int y = 0; y < size; y++) {
+            a[y] = rand() % 256;
+        }
+        a[size] = '\0';
+
+        // Générer un caractère aléatoire à rechercher
+        char c = rand() % 256;
+
+        char *lib = strchr(a, c);
+        char *myLib = ft_strchr(a, c);
+
+        int result = ((lib == NULL && myLib == NULL) || (lib != NULL && myLib != NULL && lib == myLib));
+
+        if (result)
+            printf("%d:%s\u2714 %s", i, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", i, RED, COLOR_RESET);
+
+        free(a);
+    }
+
+    // Test supplémentaire pour un cas particulier (chaîne vide)
+    t++;
+    char *b = "";
+    char c = 'a'; // caractère arbitraire pour le test
+    char *lib = strchr(b, c);
+    char *myLib = ft_strchr(b, c);
+
+    int result = ((lib == NULL && myLib == NULL) || (lib != NULL && myLib != NULL && lib == myLib));
+
+    if (result)
+        printf("%d:%s\u2714 %s", t, GRN, COLOR_RESET);
+    else
+        printf("%d:%s\U00010102 %s", t, RED, COLOR_RESET);
+}
+
+static void test_function_ft_strrchr(void) {
+    printf("\n\ntest strrchr:\n\n");
+    int t = 0;
+    srand(time(NULL));
+
+    for (int i = 0; i < 100; i++) {
+        t++;
+        int size = rand() % 100 + 1;
+        char *a = malloc(sizeof(char) * size + 1);
+        if (a == NULL) return;
+
+        for (int y = 0; y < size; y++) {
+            a[y] = rand() % 256;
+        }
+        a[size] = '\0';
+
+        // Générer un caractère aléatoire à rechercher
+        char c = rand() % 256;
+
+        char *lib = strrchr(a, c);
+        char *myLib = ft_strrchr(a, c);
+
+        int result = ((lib == NULL && myLib == NULL) || (lib != NULL && myLib != NULL && strcmp(lib, myLib) == 0));
+
+        if (result)
+            printf("%d:%s\u2714 %s", i, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", i, RED, COLOR_RESET);
+
+        free(a);
+    }
+
+    // Test supplémentaire pour un cas particulier (chaîne vide)
+    t++;
+    char *b = "";
+    char c = 'a'; // caractère arbitraire pour le test
+    char *lib = strrchr(b, c);
+    char *myLib = ft_strrchr(b, c);
+
+    int result = ((lib == NULL && myLib == NULL) || (lib != NULL && myLib != NULL && strcmp(lib, myLib) == 0));
+
+    if (result)
+        printf("%d:%s\u2714 %s", t, GRN, COLOR_RESET);
+    else
+        printf("%d:%s\U00010102 %s", t, RED, COLOR_RESET);
+}
+
+static void test_function_ft_strncmp(void) {
+    printf("\n\ntest strncmp:\n\n");
+    int t = 0;
+    srand(time(NULL));
+
+    for (int i = 0; i < 100; i++) {
+        t++;
+        int size1 = rand() % 100 + 1;
+        int size2 = rand() % 100 + 1;
+        char *a = malloc(sizeof(char) * size1 + 1);
+        char *b = malloc(sizeof(char) * size2 + 1);
+        if (a == NULL || b == NULL) return;
+
+        for (int y = 0; y < size1; y++) {
+            a[y] = rand() % 256;
+        }
+        a[size1] = '\0';
+
+        for (int y = 0; y < size2; y++) {
+            b[y] = rand() % 256;
+        }
+        b[size2] = '\0';
+
+        size_t n = rand() % (size1 + size2); // Taille aléatoire pour comparaison
+
+        int lib = strncmp(a, b, n);
+        int myLib = ft_strncmp(a, b, n);
+        int result = (lib == myLib);
+
+        if (result)
+            printf("%d:%s\u2714 %s", i, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", i, RED, COLOR_RESET);
+        free(a);
+        free(b);
+    }
+
+    // Test supplémentaire pour des cas particuliers
+    t++;
+    char *c = "hello";
+    char *d = "hello";
+    size_t n = 5;
+    int lib = strncmp(c, d, n);
+    int myLib = ft_strncmp(c, d, n);
+
+    int result = (lib == myLib);
+
+    if (result)
+        printf("%d:%s\u2714 %s", t, GRN, COLOR_RESET);
+    else
+        printf("%d:%s\U00010102 %s", t, RED, COLOR_RESET);
+}
+
+static void test_function_ft_memchr(void) {
+    printf("\n\ntest memchr:\n\n");
+    int t = 0;
+    srand(time(NULL));
+
+    for (int i = 0; i < 100; i++) {
+        t++;
+        int size = rand() % 100 + 1;
+        char *a = malloc(sizeof(char) * size);
+        if (a == NULL) return;
+
+        for (int y = 0; y < size; y++) {
+            a[y] = rand() % 256;
+        }
+
+        // Générer un caractère aléatoire à rechercher
+        char c = rand() % 256;
+
+        size_t n = rand() % size; // Taille aléatoire pour la recherche
+
+        void *lib = memchr(a, c, n);
+        void *myLib = ft_memchr(a, c, n);
+
+        int result = ((lib == NULL && myLib == NULL) || (lib != NULL && myLib != NULL && lib == myLib));
+
+        if (result)
+            printf("%d:%s\u2714 %s", i, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", i, RED, COLOR_RESET);
+
+        free(a);
+    }
+
+    // Test supplémentaire pour des cas particuliers
+    t++;
+    char *b = "hello";
+    char c = 'e'; // caractère à rechercher
+    size_t n = 5;
+    void *lib = memchr(b, c, n);
+    void *myLib = ft_memchr(b, c, n);
+
+    int result = ((lib == NULL && myLib == NULL) || (lib != NULL && myLib != NULL && lib == myLib));
+
+    if (result)
+        printf("%d:%s\u2714 %s", t, GRN, COLOR_RESET);
+    else
+        printf("%d:%s\U00010102 %s", t, RED, COLOR_RESET);
+}
+
+static void test_function_ft_memcmp(void) {
+    printf("\n\ntest memcmp:\n\n");
+    int t = 0;
+    srand(time(NULL));
+
+    for (int i = 0; i < 100; i++) {
+        t++;
+        int size1 = rand() % 100 + 1;
+        int size2 = rand() % 100 + 1;
+        char *a = malloc(sizeof(char) * size1);
+        char *b = malloc(sizeof(char) * size2);
+        if (a == NULL || b == NULL) return;
+
+        for (int y = 0; y < size1; y++) {
+            a[y] = rand() % 256;
+        }
+
+        for (int y = 0; y < size2; y++) {
+            b[y] = rand() % 256;
+        }
+
+        size_t n = rand() % (size1 + size2); // Taille aléatoire pour la comparaison
+
+        int lib = memcmp(a, b, n);
+        int myLib = ft_memcmp(a, b, n);
+
+        int result = (lib == myLib);
+
+        if (result)
+            printf("%d:%s\u2714 %s", i, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", i, RED, COLOR_RESET);
+
+        free(a);
+        free(b);
+    }
+
+    // Test supplémentaire pour des cas particuliers
+    t++;
+    char *c = "hello";
+    char *d = "hello";
+    size_t n = 5;
+    int lib = memcmp(c, d, n);
+    int myLib = ft_memcmp(c, d, n);
+
+    int result = (lib == myLib);
+
+    if (result)
+        printf("%d:%s\u2714 %s", t, GRN, COLOR_RESET);
+    else
+        printf("%d:%s\U00010102 %s", t, RED, COLOR_RESET);
+}
+
+static char *my_strnstr(const char *haystack, const char *needle, size_t len) {
+    if (*needle == '\0') // Si l'aiguille est une chaîne vide, renvoyer l'adresse de la base du foin
+        return (char *)haystack;
+
+    size_t needle_len = 0;
+    while (needle[needle_len] != '\0')
+        needle_len++;
+
+    if (len < needle_len) // Si la longueur de recherche est inférieure à la longueur de l'aiguille, l'aiguille ne peut pas être trouvée
+        return NULL;
+
+    for (size_t i = 0; i <= len - needle_len && haystack[i] != '\0'; i++) {
+        if (haystack[i] == needle[0]) { // Si le caractère courant du foin correspond au premier caractère de l'aiguille
+            size_t j;
+            for (j = 1; j < needle_len; j++) {
+                if (haystack[i + j] != needle[j])
+                    break;
+            }
+            if (j == needle_len) // Si tous les caractères de l'aiguille ont été trouvés dans le foin
+                return (char *)&haystack[i];
+        }
+    }
+    return NULL; // Aucune occurrence de l'aiguille trouvée dans le foin
+}
+
+static void test_function_ft_strnstr(void) {
+    printf("\n\ntest strnstr:\n\n");
+    int t = 0;
+    srand(time(NULL));
+
+    for (int i = 0; i < 100; i++) {
+        t++;
+        int size_haystack = rand() % 100 + 1;
+        int size_needle = rand() % size_haystack + 1; // La taille de l'aiguille doit être inférieure ou égale à la taille du foin
+        char *haystack = malloc(sizeof(char) * size_haystack + 1);
+        char *needle = malloc(sizeof(char) * size_needle + 1);
+        if (haystack == NULL || needle == NULL) return;
+
+        for (int y = 0; y < size_haystack; y++) {
+            haystack[y] = rand() % 256;
+        }
+        haystack[size_haystack] = '\0';
+
+        for (int y = 0; y < size_needle; y++) {
+            needle[y] = rand() % 256;
+        }
+        needle[size_needle] = '\0';
+
+        size_t len = rand() % size_haystack; // Longueur de recherche aléatoire
+
+        char *lib = my_strnstr(haystack, needle, len);
+        char *myLib = ft_strnstr(haystack, needle, len);
+
+        int result = ((lib == NULL && myLib == NULL) || (lib != NULL && myLib != NULL && strcmp(lib, myLib) == 0));
+
+        if (result)
+            printf("%d:%s\u2714 %s", i, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", i, RED, COLOR_RESET);
+
+        free(haystack);
+        free(needle);
+    }
+
+    // Test supplémentaire pour des cas particuliers
+    t++;
+    char *haystack = "hello";
+    char *needle = "lo";
+    size_t len = 5;
+    char *lib = my_strnstr(haystack, needle, len);
+    char *myLib = ft_strnstr(haystack, needle, len);
+
+    int result = ((lib == NULL && myLib == NULL) || (lib != NULL && myLib != NULL && strcmp(lib, myLib) == 0));
+
+    if (result)
+        printf("%d:%s\u2714 %s", t, GRN, COLOR_RESET);
+    else
+        printf("%d:%s\U00010102 %s", t, RED, COLOR_RESET);
+}
+
+static void test_function_ft_strdup(void) {
+    printf("\n\ntest strdup:\n\n");
+    int t = 0;
+    srand(time(NULL));
+
+    for (int i = 0; i < 100; i++) {
+        t++;
+        int size = rand() % 100 + 1;
+        char *str = malloc(sizeof(char) * (size + 1));
+        if (str == NULL) return;
+
+        for (int y = 0; y < size; y++) {
+            str[y] = rand() % 256;
+        }
+        str[size] = '\0';
+
+        char *ptr_lib = strdup(str);
+        char *ptr_my = ft_strdup(str);
+
+        int result = (ptr_lib != NULL && ptr_my != NULL && strcmp(ptr_lib, ptr_my) == 0);
+
+        if (result)
+            printf("%d:%s\u2714 %s", i, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", i, RED, COLOR_RESET);
+
+        free(str);
+        free(ptr_lib);
+        free(ptr_my);
+    }
+
+    // Test supplémentaire pour une chaîne vide
+    t++;
+    char *empty_str = "";
+    char *ptr_lib = strdup(empty_str);
+    char *ptr_my = ft_strdup(empty_str);
+
+    int result = (ptr_lib != NULL && ptr_my != NULL && strcmp(ptr_lib, ptr_my) == 0);
+
+    if (result)
+        printf("%d:%s\u2714 %s", t, GRN, COLOR_RESET);
+    else
+        printf("%d:%s\U00010102 %s", t, RED, COLOR_RESET);
+
+    free(ptr_lib);
+    free(ptr_my);
+}
+
+static void test_substr(char *str, char *expect, int index){
+    if (str == NULL){
+        if (expect == NULL)
+            printf("%d:%s\u2714 %s", index, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", index, RED, COLOR_RESET);
+    }
+    else{
+        if (expect != NULL && strcmp(str, expect) == 0)
+            printf("%d:%s\u2714 %s", index, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", index, RED, COLOR_RESET);
+    }
+}
+
+static void test_function_ft_substr(void){
+    printf("\n\ntest ft_substr:\n\n");
+    test_substr(ft_substr("Hello World", 6, 5), "World", 1); // Attendu: "World"
+    test_substr(ft_substr("Testing", 2, 10), "sting", 2); // Attendu: "sting"
+    test_substr(ft_substr("Substring", 0, 3), "Sub", 3); // Attendu: "Sub"
+    test_substr(ft_substr(NULL, 0, 3), NULL, 4); // Attendu: NULL
+}
+
+static void test_ft_strjoin(){
+    
+}
+
+static void test_function_ft_strjoin(void){
+    printf("\n\ntest ft_strjoin:\n\n");
+
+}
 
 int main(void){
-    test_function_ft_isalpha();
-    test_function_ft_isdigit();
-    test_function_ft_isalnum();
-    test_function_ft_isascii();
-    test_function_ft_isprint();
-    test_function_ft_strlen();
-    test_function_ft_memset();
-    test_function_bzero();
-    test_function_memcpy();
-    test_function_ft_memmove();
-    test_function_ft_strlcpy();
-
-    test_function_atoi();
-    
-    test_function_calloc();
+    // test_function_ft_isalpha();
+    // test_function_ft_isdigit();
+    // test_function_ft_isalnum();
+    // test_function_ft_isascii();
+    // test_function_ft_isprint();
+    // test_function_ft_strlen();
+    // test_function_ft_memset();
+    // test_function_bzero();
+    // test_function_memcpy();
+    // test_function_ft_memmove();
+    // test_function_ft_strlcpy();
+    // test_function_ft_strlcat();
+    // test_function_ft_toupper();
+    // test_function_ft_tolower();
+    // test_function_ft_strchr();
+    // test_function_ft_strrchr();
+    // test_function_ft_strncmp();
+    // test_function_ft_memchr();
+    // test_function_ft_memcmp();
+    // test_function_ft_strnstr();
+    // test_function_ft_atoi();
+    // test_function_ft_calloc();
+    // test_function_ft_strdup();
+    // test_function_ft_substr();
+    test_function_ft_strjoin();
     return 0;
 }
 

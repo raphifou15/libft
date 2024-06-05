@@ -14,10 +14,13 @@
 
 int	ft_toupper(int c)
 {
-	if (c >= 97 && c <= 122)
+	if (c == -1)
+		return -1;
+	unsigned char d = (unsigned char)(c);
+	if (d >= 97 && d <= 122)
 	{
-		c = c - 32;
-		return (c);
+		d = d - 32;
+		return (d);
 	}
-	return (c);
+	return (d);
 }
