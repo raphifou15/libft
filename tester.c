@@ -969,13 +969,221 @@ static void test_function_ft_substr(void){
     test_substr(ft_substr(NULL, 0, 3), NULL, 4); // Attendu: NULL
 }
 
-static void test_ft_strjoin(){
+static void test_ft_strjoin(char *str, char *expect, int index){
+    if (str == NULL){
+        if (expect == NULL)
+            printf("%d:%s\u2714 %s", index, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", index, RED, COLOR_RESET);
+    }
+    else{
+        if (expect != NULL && strcmp(str, expect) == 0)
+            printf("%d:%s\u2714 %s", index, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", index, RED, COLOR_RESET);
+    }
     
 }
 
 static void test_function_ft_strjoin(void){
     printf("\n\ntest ft_strjoin:\n\n");
+    test_ft_strjoin(ft_strjoin("Hello", "World"), "HelloWorld", 1);
+    test_ft_strjoin(ft_strjoin("Testing", "Function"), "TestingFunction", 2);
+    test_ft_strjoin(ft_strjoin("", ""), "", 3);
+    test_ft_strjoin(ft_strjoin(NULL, "World"), NULL, 4);
+    test_ft_strjoin(ft_strjoin("World", NULL), NULL, 5);
+}
 
+static void test_ft_strtrim(char *str, char *expect, int index){
+    if (str == NULL){
+        if (expect == NULL)
+            printf("%d:%s\u2714 %s", index, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", index, RED, COLOR_RESET);
+    }
+    else{
+        if (expect != NULL && strcmp(str, expect) == 0)
+            printf("%d:%s\u2714 %s", index, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", index, RED, COLOR_RESET);
+    }
+    
+}
+
+static void test_function_ft_strtrim(void){
+    test_ft_strtrim(ft_strtrim("  Hello World  ", " "), "Hello World", 1);
+    test_ft_strtrim(ft_strtrim("xxTestxx", "x"), "Test", 2);
+    test_ft_strtrim(ft_strtrim("yyGoodbyeyy", "y"), "Goodbye", 3);
+    test_ft_strtrim(ft_strtrim("aaaHelloaaa", "a"), "Hello", 4);
+    test_ft_strtrim(ft_strtrim(NULL, " "), NULL, 5);
+    test_ft_strtrim(ft_strtrim("Hello", NULL), NULL, 6);
+    test_ft_strtrim(ft_strtrim(NULL, NULL), NULL, 7);
+}
+
+static int check_equal_array(char **arr1, char **arr2){
+    for (int i = 0; arr1[i] != NULL && arr2[i] != NULL; i++){
+        if (strcmp(arr1[i], arr2[i]) != 0){
+            printf("\n %s = arr1: %s = arr2 \n", arr1[i], arr2[i]);
+            return 1;
+        }
+    }
+    return 0;
+}
+
+static void test_ft_split(char **arr, char **expect, int index){
+    if (arr == NULL){
+        if (expect == NULL)
+            printf("%d:%s\u2714 %s", index, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", index, RED, COLOR_RESET);
+    }
+    else{
+        if (expect != NULL && check_equal_array(arr, expect) == 0)
+            printf("%d:%s\u2714 %s", index, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", index, RED, COLOR_RESET);
+    }
+}
+
+static void test_function_ft_split(void){
+    char *expected1[] = {"Hello", "World", NULL};
+    test_ft_split(ft_split("Hello World", ' '), expected1, 1);
+
+    char *expected2[] = {"This", "is", "a", "test", NULL};
+    test_ft_split(ft_split("This is a test", ' '), expected2, 2);
+
+    char *expected3[] = {"Split", "this", "string", NULL};
+    test_ft_split(ft_split("Split this string", ' '), expected3, 3);
+
+    char *expected4[] = {"No", "delimiter", NULL};
+    test_ft_split(ft_split("No,delimiter", ','), expected4, 4);
+
+    char *expected5[] = {"Multiple", "delimiters", NULL};
+    test_ft_split(ft_split("Multiple,,delimiters", ','), expected5, 5);
+
+    test_ft_split(ft_split(NULL, ' '), NULL, 6);
+
+    char *expected6[] = {"NoDelimitersHere", NULL};
+    test_ft_split(ft_split("NoDelimitersHere", ' '), expected6, 7);
+
+    char *expected7[] = {"Hello", "World", NULL};
+    test_ft_split(ft_split(",Hello,World,", ','), expected7, 8);
+}
+
+
+static void test_ft_itoa(char *str, char *expect, int index){
+    if (str == NULL){
+        if (expect == NULL)
+            printf("%d:%s\u2714 %s", index, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", index, RED, COLOR_RESET);
+    }
+    else{
+        if (expect != NULL && strcmp(str, expect) == 0)
+            printf("%d:%s\u2714 %s", index, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", index, RED, COLOR_RESET);
+    }
+    
+}
+
+
+static void test_function_ft_itoa(void){
+    test_ft_itoa(ft_itoa(0), "0", 1);
+    test_ft_itoa(ft_itoa(42), "42", 2);
+    test_ft_itoa(ft_itoa(123456), "123456", 3);
+    test_ft_itoa(ft_itoa(-42), "-42", 4);
+    test_ft_itoa(ft_itoa(-123456), "-123456", 5);
+    test_ft_itoa(ft_itoa(INT_MIN), "-2147483648", 6);
+    test_ft_itoa(ft_itoa(INT_MAX), "2147483647", 7);
+}
+
+static char to_uppercase(unsigned int index, char c) {
+    if (c >= 'a' && c <= 'z') {
+        return c - ('a' - 'A');
+    }
+    return c;
+}
+
+static char add_index(unsigned int index, char c) {
+    return c + index;
+}
+
+static void test_ft_strmapi(char *str, char *expect, int index){
+    if (str == NULL){
+        if (expect == NULL)
+            printf("%d:%s\u2714 %s", index, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", index, RED, COLOR_RESET);
+    }
+    else{
+        if (expect != NULL && strcmp(str, expect) == 0)
+            printf("%d:%s\u2714 %s", index, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", index, RED, COLOR_RESET);
+    }
+    
+}
+
+static void test_function_ft_strmapi(void){
+    test_ft_strmapi(ft_strmapi("hello", &to_uppercase), "HELLO", 1);
+    test_ft_strmapi(ft_strmapi("abcdef", add_index), "acegik", 2);
+    test_ft_strmapi(ft_strmapi("", to_uppercase), "", 3);
+    test_ft_strmapi(ft_strmapi(NULL, to_uppercase), NULL, 4);
+    test_ft_strmapi(ft_strmapi("Test", NULL), NULL, 5);
+}
+
+void to_uppercase2(unsigned int index, char *c) {
+    if (*c >= 'a' && *c <= 'z') {
+        *c -= ('a' - 'A');
+    }
+}
+
+void to_lower_to_uppercase (unsigned int index, char *c){
+    if (index % 2){
+        if (*c >= 'a' && *c <= 'z') {
+            *c -= ('a' - 'A');
+        }
+    }else{
+        if (*c >= 'A' && *c <= 'Z') {
+            *c += ('a' - 'A');
+        }
+    }
+    
+}
+
+void add_index2(unsigned int index, char *c) {
+    *c = *c + index;
+}
+
+static void test_ft_striteri(char *s, void (*f)(unsigned int, char*), const char *expected_result, int index){
+    char *test_str = NULL;
+    if (s) {
+        test_str = strdup(s);  // Faire une copie de la chaîne pour préserver l'originale
+    }
+
+    ft_striteri(test_str, f);
+
+    if (test_str == NULL) {
+        if (expected_result == NULL)
+            printf("%d:%s\u2714 %s", index, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", index, RED, COLOR_RESET);
+    } else {
+        if (expected_result != NULL && strcmp(test_str, expected_result) == 0)
+            printf("%d:%s\u2714 %s", index, GRN, COLOR_RESET);
+        else
+            printf("%d:%s\U00010102 %s", index, RED, COLOR_RESET);
+        free(test_str);
+    }
+}
+
+static void test_function_ft_striteri(void){
+    test_ft_striteri("hello", to_uppercase2, "HELLO", 1);
+    test_ft_striteri("abcdef", add_index2, "acegik", 2);
+    test_ft_striteri("rapha", to_lower_to_uppercase, "rApHa", 3);
+    test_ft_striteri(NULL, to_uppercase2, NULL, 4);
+    test_ft_striteri("Test", NULL, "Test", 5);
 }
 
 int main(void){
@@ -1003,7 +1211,12 @@ int main(void){
     // test_function_ft_calloc();
     // test_function_ft_strdup();
     // test_function_ft_substr();
-    test_function_ft_strjoin();
+    // test_function_ft_strjoin();
+    // test_function_ft_strtrim();
+    // test_function_ft_split();
+    // test_function_ft_itoa();
+    // test_function_ft_strmapi();
+    // test_function_ft_striteri();
     return 0;
 }
 
