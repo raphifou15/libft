@@ -1011,6 +1011,7 @@ static void test_ft_strtrim(char *str, char *expect, int index){
 }
 
 static void test_function_ft_strtrim(void){
+    printf("\n\ntest ft_strtrim:\n\n");
     test_ft_strtrim(ft_strtrim("  Hello World  ", " "), "Hello World", 1);
     test_ft_strtrim(ft_strtrim("xxTestxx", "x"), "Test", 2);
     test_ft_strtrim(ft_strtrim("yyGoodbyeyy", "y"), "Goodbye", 3);
@@ -1046,6 +1047,7 @@ static void test_ft_split(char **arr, char **expect, int index){
 }
 
 static void test_function_ft_split(void){
+    printf("\n\ntest ft_split:\n\n");
     char *expected1[] = {"Hello", "World", NULL};
     test_ft_split(ft_split("Hello World", ' '), expected1, 1);
 
@@ -1089,6 +1091,7 @@ static void test_ft_itoa(char *str, char *expect, int index){
 
 
 static void test_function_ft_itoa(void){
+    printf("\n\ntest ft_itoa:\n\n");
     test_ft_itoa(ft_itoa(0), "0", 1);
     test_ft_itoa(ft_itoa(42), "42", 2);
     test_ft_itoa(ft_itoa(123456), "123456", 3);
@@ -1126,6 +1129,7 @@ static void test_ft_strmapi(char *str, char *expect, int index){
 }
 
 static void test_function_ft_strmapi(void){
+    printf("\n\ntest ft_strmapi:\n\n");
     test_ft_strmapi(ft_strmapi("hello", &to_uppercase), "HELLO", 1);
     test_ft_strmapi(ft_strmapi("abcdef", add_index), "acegik", 2);
     test_ft_strmapi(ft_strmapi("", to_uppercase), "", 3);
@@ -1179,6 +1183,7 @@ static void test_ft_striteri(char *s, void (*f)(unsigned int, char*), const char
 }
 
 static void test_function_ft_striteri(void){
+    printf("\n\ntest ft_striteri:\n\n");
     test_ft_striteri("hello", to_uppercase2, "HELLO", 1);
     test_ft_striteri("abcdef", add_index2, "acegik", 2);
     test_ft_striteri("rapha", to_lower_to_uppercase, "rApHa", 3);
@@ -1186,37 +1191,135 @@ static void test_function_ft_striteri(void){
     test_ft_striteri("Test", NULL, "Test", 5);
 }
 
+static void test_ft_putchar_fd(char c, char *expect, int index){
+    int fd = open("temp.txt", O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
+    ft_putchar_fd(c, fd);
+    close(fd);
+    fd = open("temp.txt", O_RDONLY);
+    char buf[10000] = {0};
+    read(fd, buf, 1);
+    close(fd);
+    unlink("temp.txt");
+    if (strcmp(buf, expect) == 0)
+        printf("%d:%s\u2714 %s", index, GRN, COLOR_RESET);
+    else
+        printf("%d:%s\U00010102 %s", index, RED, COLOR_RESET);
+}
+
+static void test_function_ft_putchar_fd(void){
+    printf("\n\ntest ft_putchar_fd:\n\n");
+    test_ft_putchar_fd('A', "A", 1);
+    test_ft_putchar_fd('z', "z", 2);
+    test_ft_putchar_fd('\n', "\n", 3);
+}
+
+static void test_ft_putstr_fd(char* str, char *expect, int index){
+    int fd = open("temp.txt", O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
+    ft_putstr_fd(str, fd);
+    close(fd);
+    fd = open("temp.txt", O_RDONLY);
+    char buf[10000] = {0};
+    read(fd, buf, strlen(str));
+    close(fd);
+    unlink("temp.txt");
+    if (strcmp(buf, expect) == 0)
+        printf("%d:%s\u2714 %s", index, GRN, COLOR_RESET);
+    else
+        printf("%d:%s\U00010102 %s", index, RED, COLOR_RESET);
+}
+
+static void test_function_ft_putstr_fd(void){
+    printf("\n\ntest ft_putstr_fd:\n\n");
+    test_ft_putstr_fd("Hello, world!", "Hello, world!", 1);
+    test_ft_putstr_fd("42", "42", 2);
+    test_ft_putstr_fd("", "", 3);
+    test_ft_putstr_fd("A longer string with multiple words and characters.", "A longer string with multiple words and characters.", 4);
+}
+
+static void test_ft_putendl_fd(char* str, char *expect, int index){
+    int fd = open("temp.txt", O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
+    ft_putendl_fd(str, fd);
+    close(fd);
+    fd = open("temp.txt", O_RDONLY);
+    char buf[10000] = {0};
+    read(fd, buf, sizeof(buf) -1 );
+    close(fd);
+    unlink("temp.txt");
+    if (strcmp(buf, expect) == 0)
+        printf("%d:%s\u2714 %s", index, GRN, COLOR_RESET);
+    else
+        printf("%d:%s\U00010102 %s", index, RED, COLOR_RESET);
+}
+
+
+static void test_function_ft_putendl_fd(void){
+    printf("\n\ntest ft_putendl_fd:\n\n");
+    test_ft_putendl_fd("Hello, world!", "Hello, world!\n", 1);
+    test_ft_putendl_fd("42", "42\n", 2);
+    test_ft_putendl_fd("", "\n", 3);
+    test_ft_putendl_fd("A longer string with multiple words and characters.", "A longer string with multiple words and characters.\n", 4);
+}
+
+static void test_ft_putnbr_fd(int nb, char *expect, int index){
+    int fd = open("temp.txt", O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
+    ft_putnbr_fd(nb, fd);
+    close(fd);
+    fd = open("temp.txt", O_RDONLY);
+    char buf[10000] = {0};
+    read(fd, buf, sizeof(buf) -1 );
+    close(fd);
+    unlink("temp.txt");
+    if (strcmp(buf, expect) == 0)
+        printf("%d:%s\u2714 %s", index, GRN, COLOR_RESET);
+    else
+        printf("%d:%s\U00010102 %s", index, RED, COLOR_RESET);
+}
+
+static void test_function_ft_putnbr_fd(void){
+    printf("\n\ntest ft_putnbr_fd:\n\n");
+    test_ft_putnbr_fd(42, "42", 1);
+    test_ft_putnbr_fd(0, "0", 2);
+    test_ft_putnbr_fd(-123, "-123", 3);
+    test_ft_putnbr_fd(2147483647, "2147483647", 4);
+    test_ft_putnbr_fd(-2147483648, "-2147483648", 5);
+}
+
+
 int main(void){
-    // test_function_ft_isalpha();
-    // test_function_ft_isdigit();
-    // test_function_ft_isalnum();
-    // test_function_ft_isascii();
-    // test_function_ft_isprint();
-    // test_function_ft_strlen();
-    // test_function_ft_memset();
-    // test_function_bzero();
-    // test_function_memcpy();
-    // test_function_ft_memmove();
-    // test_function_ft_strlcpy();
-    // test_function_ft_strlcat();
-    // test_function_ft_toupper();
-    // test_function_ft_tolower();
-    // test_function_ft_strchr();
-    // test_function_ft_strrchr();
-    // test_function_ft_strncmp();
-    // test_function_ft_memchr();
-    // test_function_ft_memcmp();
-    // test_function_ft_strnstr();
-    // test_function_ft_atoi();
-    // test_function_ft_calloc();
-    // test_function_ft_strdup();
-    // test_function_ft_substr();
-    // test_function_ft_strjoin();
-    // test_function_ft_strtrim();
-    // test_function_ft_split();
-    // test_function_ft_itoa();
-    // test_function_ft_strmapi();
-    // test_function_ft_striteri();
+    test_function_ft_isalpha();
+    test_function_ft_isdigit();
+    test_function_ft_isalnum();
+    test_function_ft_isascii();
+    test_function_ft_isprint();
+    test_function_ft_strlen();
+    test_function_ft_memset();
+    test_function_bzero();
+    test_function_memcpy();
+    test_function_ft_memmove();
+    test_function_ft_strlcpy();
+    test_function_ft_strlcat();
+    test_function_ft_toupper();
+    test_function_ft_tolower();
+    test_function_ft_strchr();
+    test_function_ft_strrchr();
+    test_function_ft_strncmp();
+    test_function_ft_memchr();
+    test_function_ft_memcmp();
+    test_function_ft_strnstr();
+    test_function_ft_atoi();
+    test_function_ft_calloc();
+    test_function_ft_strdup();
+    test_function_ft_substr();
+    test_function_ft_strjoin();
+    test_function_ft_strtrim();
+    test_function_ft_split();
+    test_function_ft_itoa();
+    test_function_ft_strmapi();
+    test_function_ft_striteri();
+    test_function_ft_putchar_fd();
+    test_function_ft_putstr_fd();
+    test_function_ft_putendl_fd();
+    test_function_ft_putnbr_fd();
     return 0;
 }
 
