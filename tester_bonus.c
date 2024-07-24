@@ -284,28 +284,19 @@ static void test_function_ft_lstclear(void){
     char *ok = ft_strdup("ok");
     void *contents[] = {lala, lili, ok};
     test_ft_lstclear(contents, 1);
-    // char *lala2 = ft_strdup("lala");
-    // char *lili2 = ft_strdup("lili");
-    // char *ok2 = ft_strdup("ok");
-    // void *contents2[] = {lala2, lili2, ok2};
-    // void *expect2[] = {"lala", "ok"};
-    // char *des2 = {"lili"};
-    // test_ft_lstdelone(contents2, 2,expect2, des2, 2);
-    // char *lala3 = NULL;
-    // char *lili3 = ft_strdup("lili");
-    // char *ok3 = ft_strdup("ok");
-    // void *contents3[] = {lala3, lili3, ok3};
-    // void *expect3[] = {"lili"};
-    // char *des3 = {"ok"};
-    // test_ft_lstdelone(contents3, 1,expect3, des3, 3);
+    char *lala2 = NULL;
+    char *lili2 = ft_strdup("lili");
+    char *ok2 = ft_strdup("ok");
+    void *contents2[] = {lala2, lili2, ok2};
+    test_ft_lstclear(contents2, 2);
 }
 
 int main(void){
-    // test_function_ft_lstnew();
-    // test_function_ft_lstadd_front();
-    // test_function_ft_lstsize();
-    // test_function_ft_lstlast();
-    // test_function_ft_lstadd_back();
-    // test_function_ft_lstdelone();
+    test_function_ft_lstnew();
+    test_function_ft_lstadd_front();
+    test_function_ft_lstsize();
+    test_function_ft_lstlast();
+    test_function_ft_lstadd_back();
+    test_function_ft_lstdelone();
     test_function_ft_lstclear();
 }
